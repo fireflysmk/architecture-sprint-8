@@ -4,18 +4,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
 
-    private static final Logger log = LoggerFactory.getLogger(ReportController.class);
-
-    @GetMapping("/reports")
-    public String getReports() {
-        return "Reports data";
+    @GetMapping
+    public Map<String, String> getReports() {
+        return Collections.singletonMap("message", "big big report, trust me!");
     }
 }
-

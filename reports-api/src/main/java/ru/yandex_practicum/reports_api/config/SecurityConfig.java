@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -24,7 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
-import java.util.Arrays;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Configuration
@@ -56,10 +59,23 @@ public class SecurityConfig {
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
         converter.setAuthorityPrefix("ROLE_");
+
         converter.setAuthoritiesClaimName("realm_access.roles");
 
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
-        jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
+        jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+
+            Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+            if (realmAccess != null) {
+                List<String> roles = (List<String>) realmAccess.get("roles");
+                if (roles != null) {
+                    return roles.stream()
+                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                            .collect(Collectors.toList());
+                }
+            }
+            return Collections.emptyList();
+        });
 
         return jwtConverter;
     }
@@ -71,6 +87,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/reports/**").hasAuthority("ROLE_PROTHETIC_USER")
+                        //.requestMatchers("/reports/**").hasRole("prothetic_user")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -80,6 +97,8 @@ public class SecurityConfig {
                     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                     if (authentication != null) {
                         logger.info("User roles: {}", authentication.getAuthorities());
+                    } else {
+                        logger.info("Authentication is null!");
                     }
                     chain.doFilter(request, response);
                 }, BearerTokenAuthenticationFilter.class);
@@ -93,7 +112,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true); // Разрешаем credentials
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

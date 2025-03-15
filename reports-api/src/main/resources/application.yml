@@ -8,7 +8,7 @@ spring:
         jwt:
           issuer-uri: http://keycloak:8080/realms/reports-realm
           #issuer-uri: http://localhost:8080/realms/reports-realm
-          #issuer-uri: http://keycloak:8080/auth/realms/reports-realm
+          #issuer-uri: http://keycloak:8080/auth/realms/reports-realm - remove /auth/ if using keycloak v17+
 
 logging:
   level:
@@ -18,4 +18,4 @@ logging:
     org.springframework.security.oauth2.jwt: DEBUG
     ru:
       yandex_practicum:
-        reports_api;: DEBUG
+        reports_api: DEBUG

@@ -17,20 +17,8 @@ public class ReportsApiApplication {
 	private Environment environment;
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(ReportsApiApplication.class, args);
-
 		logger.info("we started!");
-
-		if(args.length > 0) {
-			logger.info("THERES SOME ARGS...");
-			for (String arg : args) {
-				logger.info("Argument: {}", arg);
-			}
-		} else  {
-			logger.info("NO ARGS   args.length == 0");
-		}
-
 	}
 	@PostConstruct
 	public void logConfig() {
