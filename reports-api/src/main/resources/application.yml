@@ -1,0 +1,21 @@
+server:
+  port: 8000
+
+spring:
+  security:
+    oauth2:
+      resource server:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/reports-realm
+          #issuer-uri: http://localhost:8080/realms/reports-realm
+          #issuer-uri: http://keycloak:8080/auth/realms/reports-realm
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.oauth2.jwt: DEBUG
+    ru:
+      yandex_practicum:
+        reports_api;: DEBUG

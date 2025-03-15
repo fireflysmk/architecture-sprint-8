@@ -11,18 +11,31 @@ const ReportPage: React.FC = () => {
       setError('Not authenticated');
       return;
     }
+	
+	console.log('Token:', keycloak.token);
 
     try {
       setLoading(true);
       setError(null);
+   
+      await keycloak.updateToken(30); 
+      const token = keycloak.token;
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/reports`, {
         headers: {
-          'Authorization': `Bearer ${keycloak.token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
+		
+		credentials: 'include',
       });
 
-      
+      if (!response.ok) {
+		const errorText = await response.text();
+        throw new Error(errorText || 'Failed to fetch report');
+      }
+
+      const data = await response.json();
+      console.log('Report data:', data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -51,7 +64,7 @@ const ReportPage: React.FC = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md">
         <h1 className="text-2xl font-bold mb-6">Usage Reports</h1>
-        
+
         <button
           onClick={downloadReport}
           disabled={loading}
