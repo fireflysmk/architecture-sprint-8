@@ -1,6 +1,10 @@
 Запуск проекта:
 docker-compose up -d --build
 
+1. открыть http://localhost:3000/
+2. залогиниться под юзером с realmRole= "prothetic_user", например prothetic1/prothetic123
+3. нажать download report (в консоле F12 будет виден токен и ответ API)
+
 Ручная проверка:
 
 1. получить токен:
