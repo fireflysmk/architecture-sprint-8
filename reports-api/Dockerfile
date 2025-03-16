@@ -1,6 +1,9 @@
-FROM openjdk:17-jdk-alpine
-RUN apk add --no-cache curl
+FROM openjdk:17-jdk-alpine AS build
 WORKDIR /app
-ARG JAR_FILE=target/reports-api-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} app.jar
+COPY . .
+RUN ./mvnw clean package -DskipTests
+
+FROM openjdk:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/reports-api-0.0.1-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/config/application.yml"]
