@@ -40,3 +40,20 @@ api-1  | 2025-03-15T17:41:09.644Z DEBUG 1 --- [nio-8000-exec-2] s.w.s.m.m.a.Requ
 api-1  | 2025-03-15T17:41:09.664Z DEBUG 1 --- [nio-8000-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
 api-1  | 2025-03-15T17:41:09.665Z DEBUG 1 --- [nio-8000-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [{message=big big report, trust me!}]
 api-1  | 2025-03-15T17:41:09.673Z DEBUG 1 --- [nio-8000-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+
+
+что вообще тут происходит:
+
+- Вы открываете браузер и вводите http://localhost:3000/.
+- Браузер отправляет HTTP-запрос на фронтенд-сервер, который работает на localhost:3000.
+- Фронтенд-сервер обрабатывает запрос:
+- Фронтенд-сервер обрабатывает запрос и возвращает HTML, CSS и JavaScript.
+- Если у вас настроена аутентификация через Keycloak, фронтенд может перенаправить вас на страницу входа в Keycloak.
+- Аутентификация через Keycloak
+- Если пользователь не аутентифицирован, фронтенд перенаправляет вас на Keycloak для входа.
+- Keycloak отображает страницу входа, где вы вводите свои учётные данные (логин и пароль).
+- Keycloak возвращает токен
+- После успешной аутентификации Keycloak возвращает JWT-токен (токен доступа) фронтенду.
+- Фронтенд сохраняет токен (например, в localStorage или cookies) и использует его для последующих запросов к API.
+- Фронтенд отображает интерфейс
+- После успешной аутентификации фронтенд отображает интерфейс, включая кнопку "Download Reports".
